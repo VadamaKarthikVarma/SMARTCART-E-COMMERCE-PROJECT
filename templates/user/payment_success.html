@@ -1,0 +1,88 @@
+{% extends "user/base.html" %}
+
+{% block title %}Payment Successful{% endblock %}
+
+{% block extra_head %}
+<style>
+    .success-card {
+        border-radius: 14px;
+    }
+    .item-img {
+        width: 70px;
+        border-radius: 10px;
+    }
+    .item-row {
+        border-bottom: 1px solid #eee;
+        padding: 10px 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container my-4">
+
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+
+            <div class="card shadow-sm success-card">
+                <div class="card-body">
+
+                    <h3 class="text-center text-success mb-3">
+                        <i class="fa-solid fa-circle-check"></i> Payment Successful!
+                    </h3>
+
+                    <p class="text-center mb-1">
+                        <strong>Payment ID:</strong> {{ payment_id }}
+                    </p>
+                    <p class="text-center mb-3">
+                        <strong>Order ID (Razorpay):</strong> {{ order_id }}
+                    </p>
+
+                    <hr>
+
+                    <h5 class="mb-3">Order Summary</h5>
+
+                    {% if cart %}
+                        {% for pid, item in cart.items() %}
+                        <div class="d-flex align-items-center item-row">
+                            <img src="/static/uploads/product_images/{{ item.image }}" class="item-img me-3">
+
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">{{ item.name }}</h6>
+                                <p class="mb-0">
+                                    <strong>Qty:</strong> {{ item.quantity }}
+                                    &nbsp; | &nbsp;
+                                    <strong>Price:</strong> ₹{{ item.price * item.quantity }}
+                                </p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No items found in cart.</p>
+                    {% endif %}
+
+                    <hr>
+
+                    <h4 class="text-end">
+                        Total Paid:
+                        <strong>₹{{ grand_total }}</strong>
+                    </h4>
+
+                    <div class="text-center mt-4">
+                        <a href="/user/products" class="btn btn-primary">
+                            <i class="fa-solid fa-cart-shopping"></i> Continue Shopping
+                        </a>
+                    </div>
+
+                    
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

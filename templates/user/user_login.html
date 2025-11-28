@@ -1,0 +1,37 @@
+{% extends "user/auth_base.html" %}
+
+{% block title %}User Login{% endblock %}
+
+{% block content %}
+
+<div class="auth-wrapper">
+
+    <div class="login-card auth-card">
+        <h2>User Login</h2>
+
+        <form method="POST" action="/user-login">
+
+            <div class="mb-3">
+                <label class="form-label">Email:</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password:</label>
+                <input type="password" name="password" class="form-control" required>
+                <p style="text-align: end;"><a href="/user-forgot-password">forget password?</a></p>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 btn-center">Login</button>
+
+        </form>
+
+        <p class="mt-3 text-center">
+            I don't have an account?
+            <a href="/user-register">Register</a>
+        </p>
+    </div>
+
+</div>
+
+{% endblock %}

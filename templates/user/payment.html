@@ -1,0 +1,209 @@
+{% extends "user/base.html" %}
+
+{% block title %}Payment{% endblock %}
+
+{% block extra_head %}
+<style>
+    .payment-card {
+        max-width: 480px;
+        margin: auto;
+        border-radius: 14px;
+    }
+
+    .item-img {
+        width: 85px;
+        border-radius: 10px;
+    }
+
+    .item-wrapper {
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    /* ✅ Product name smaller */
+    .item-name {
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    /* ✅ Qty label smaller */
+    .qty-box .fw-bold {
+        font-size: 0.80rem;
+    }
+
+    /* ✅ Qty number smaller */
+    .qty-box span {
+        font-size: 0.85rem;
+    }
+
+    .qty-box {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 2px 5px;
+        display: inline-block;
+    }
+
+    .qty-btn {
+        width: 21px;
+        height: 24px;
+        padding: 0;
+        font-size: 0.75rem;
+    }
+
+    /* ✅ Amount smaller but bold */
+    .item-price {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+
+            <div class="card shadow-sm payment-card">
+                <div class="card-body">
+
+                    <!-- Delivery Address -->
+                    <h5 class="mb-2">Delivery Address</h5>
+                    <div class="border rounded p-3 mb-4 bg-light">
+                        {% if address %}
+                        <div class="fw-semibold mb-1">{{ address.address_line1 }}</div>
+                        {% if address.address_line2 %}
+                        <div class="mb-1">{{ address.address_line2 }}</div>
+                        {% endif %}
+                        <div>{{ address.city }}, {{ address.state }} - {{ address.pincode }}</div>
+
+                        {% if address.phone %}
+                        <div class="mt-1"><strong>Phone:</strong> {{ address.phone }}</div>
+                        {% endif %}
+                        {% else %}
+                        <span class="text-muted">No address found.</span>
+                        {% endif %}
+                        <a href="/user/address?next=pay" class="btn btn-primary mt-2 px-4 py-2">
+                            Edit Address <i class="fa-solid fa-pen fa-sm"></i>
+                        </a>
+                    </div>
+
+                    <h4 class="text-center mb-4">Place Your Order</h4>
+                    <hr>
+
+                    {% for pid, item in (cart or {}).items() %}
+                    <div class="item-wrapper">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <img src="/static/uploads/product_images/{{ item.image }}" class="item-img"
+                                    alt="{{ item.name }}">
+                            </div>
+
+                            <div class="flex-grow-1">
+                                <h5 class="mb-2 item-name">{{ item.name }}</h5>
+
+                                <div class="qty-box">
+                                    <div class="fw-bold mb-1">Qty:</div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a href="/user/cart/decrease/{{ pid }}?from=pay"
+                                            class="btn btn-outline-secondary qty-btn">-</a>
+                                        <span>{{ item.quantity }}</span>
+                                        <a href="/user/cart/increase/{{ pid }}?from=pay"
+                                            class="btn btn-outline-secondary qty-btn">+</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-end">
+                                <div class="item-price">
+                                    ₹{{ item.price * item.quantity }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <hr>
+
+                    <h4 class="text-center mb-3">
+                        Total Bill:
+                        <strong>₹{{ amount }}</strong>
+                    </h4>
+
+                    <div class="text-center mb-2">
+                        <button id="rzp-button" class="btn btn-success btn-lg">
+                            <i class="fa-solid fa-money-check-dollar"></i> Pay Now
+                        </button>
+                    </div>
+
+                    <p class="text-muted text-center mb-0" style="font-size: 0.9rem;">
+                        You will be redirected to Razorpay to complete your payment.
+                    </p>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+    const options = {
+        key: "{{ key_id }}",
+        amount: "{{ razorpay_amount }}",
+        currency: "INR",
+        name: "SmartCart",
+        description: "Order Payment",
+        order_id: "{{ order_id }}",
+
+        handler: function (response) {
+            var form = document.createElement("form");
+            form.method = "POST";
+            form.action = "/verify-payment";
+
+            var fields = {
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature
+            };
+
+            for (var name in fields) {
+                var input = document.createElement("input");
+                input.type = "hidden";
+                input.name = name;
+                input.value = fields[name];
+                form.appendChild(input);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        },
+
+        modal: {
+            ondismiss: function () {
+                console.log("Payment popup closed by user");
+            }
+        }
+    };
+
+    const rzp = new Razorpay(options);
+
+    rzp.on("payment.failed", function (response) {
+        const params = new URLSearchParams({
+            error: response.error && response.error.description
+                ? response.error.description
+                : "Payment failed or cancelled."
+        });
+        window.location.href = "/payment-failed?" + params.toString();
+    });
+
+    document.getElementById('rzp-button').onclick = function (e) {
+        rzp.open();
+        e.preventDefault();
+    };
+</script>
+
+{% endblock %}

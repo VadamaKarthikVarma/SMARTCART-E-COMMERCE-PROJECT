@@ -1,0 +1,117 @@
+{% extends "user/invoice_base.html" %}
+
+{% block title %} Invoice {% endblock %}
+
+{% block extra_head %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: white;
+        margin: 0;
+        padding: 0;
+    }
+
+    .invoice-box {
+        width: 80%;
+        margin: 30px auto;
+        border: 1px solid #eee;
+        padding: 20px;
+    }
+
+    .header {
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+    }
+
+    table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f5f5f5;
+    }
+
+    h3 {
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="invoice-box">
+    <div class="header">
+        <h2>SmartCart Invoice</h2>
+        <p><strong>Order ID:</strong> {{ order.order_id }}</p>
+        <p><strong>Date:</strong> {{ order.created_at }}</p>
+    </div>
+
+    <h3>Customer Details</h3>
+    <p><strong>Customer ID:</strong> {{ order.user_id }}</p>
+
+    {# Customer Name: prefer user.name (from users table), fall back to order.user_name or 'N/A' #}
+    <p><strong>Customer Name:</strong>
+        {% if user and user.name %}
+            {{ user.name }}
+        {% elif order.user_name %}
+            {{ order.user_name }}
+        {% else %}
+            N/A
+        {% endif %}
+    </p>
+
+    {# Customer Address: build from address passed in (session or order) #}
+    <p><strong>Customer Address:</strong>
+        {% set a = address or {} %}
+        {% if a.address_line1 or a.address_line2 or a.city or a.state or a.pincode or a.phone %}
+            {{ a.address_line1 or "" }}
+            {% if a.address_line2 %}, {{ a.address_line2 }}{% endif %}
+            {% if a.city %}, {{ a.city }}{% endif %}
+            {% if a.state %}, {{ a.state }}{% endif %}
+            {% if a.pincode %} - {{ a.pincode }}{% endif %}
+            {% if a.phone %} <br><strong>Phone:</strong> {{ a.phone }}{% endif %}
+        {% else %}
+            {# If no session/order address, try order fields if present (adapt names if needed) #}
+            {% if order.address_line1 or order.address_line2 or order.city or order.state or order.pincode %}
+                {{ order.address_line1 or "" }}
+                {% if order.address_line2 %}, {{ order.address_line2 }}{% endif %}
+                {% if order.city %}, {{ order.city }}{% endif %}
+                {% if order.state %}, {{ order.state }}{% endif %}
+                {% if order.pincode %} - {{ order.pincode }}{% endif %}
+            {% else %}
+                N/A
+            {% endif %}
+        {% endif %}
+    </p>
+
+    <h3>Items</h3>
+    <table>
+        <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price (₹)</th>
+        </tr>
+
+        {% for it in items %}
+        <tr>
+            <td>{{ it.product_name }}</td>
+            <td>{{ it.quantity }}</td>
+            <td>{{ it.price }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h3 style="text-align:right;">Grand Total: ₹{{ order.amount }}</h3>
+</div>
+{% endblock %}

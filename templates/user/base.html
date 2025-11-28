@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}User Panel{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
+    <!-- Bootstrap  -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+    {% block extra_head %}
+    {% endblock %}
+</head>
+
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- HEADER (full width) -->
+    <header class="bg">
+        <div class="container py-2 d-flex justify-content-between align-items-center">
+
+            <!-- LEFT SIDE: SITE NAME -->
+            <div class="nm">
+                <h4 class="m-0">SMarTCART</h4>
+            </div>
+
+            <!-- MOBILE TOGGLER (only visible on small screens) -->
+            <button class="mobile-nav-toggle justify-content-end d-md-none" type="button" data-bs-toggle="collapse"
+                data-bs-target="#mobileMenu" aria-expanded="false">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <!-- NAVIGATION MENU -->
+            <nav class="d-flex justify-content-end">
+                <div class="nav nav-tabs collapse d-md-flex" id="mobileMenu" role="tablist">
+
+                    <a href="/user-dashboard"
+                        class="nav-link {% if active_tab == 'dashboard' %}active{% endif %} text-dark">
+                        Dashboard
+                    </a>
+
+                    <a href="/user/products" class="nav-link {% if active_tab == 'list' %}active{% endif %} text-dark">
+                        Browse Products <i class="fa-solid fa-basket-shopping"></i>
+                    </a>
+
+                    <a href="/user/cart" class="nav-link {% if active_tab == 'list' %}active{% endif %} text-dark">
+                        View Cart <i class="fa-solid fa-cart-shopping"></i>
+                    </a>
+
+                    <a href="/user/my-orders" class="nav-link {% if active_tab == 'list' %}active{% endif %} text-dark">
+                        My Orders <i class="fa-solid fa-truck-ramp-box"></i>
+                    </a>
+
+                    <a href="/user/profile" class="nav-link {% if active_tab == 'list' %}active{% endif %} text-dark">
+                        My Profile <i class="fa-solid fa-circle-user fa-lg"></i>
+                    </a>
+
+                    <a href="/user-logout" class="nav-link logout-link text-dark">
+                        Logout
+                    </a>
+
+                </div>
+            </nav>
+
+        </div>
+    </header>
+
+    <!-- FLASH + MAIN CONTENT (centered, fixed width) -->
+    <main class="flex-grow-1 main-bg">
+        <div class="container mt-4">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <p class="flash-message text-{{ category }}">{{ message }}</p>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+
+    <!-- FOOTER (full width) -->
+    <footer class="bg-dark text-light text-center py-4 mt-auto">
+        <div class="container">
+            <p class="mb-0">© 2025 VEdhA. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+
+    {% block extra_scripts %}{% endblock %}
+
+    <script>
+        setTimeout(() => {
+            document.querySelectorAll('.flash-message').forEach(msg => {
+                msg.style.transition = "opacity 0.6s ease";
+                msg.style.opacity = "0";
+
+                setTimeout(() => msg.remove(), 600);
+            });
+        }, 2200);
+    </script>
+
+</body>
+
+</html>

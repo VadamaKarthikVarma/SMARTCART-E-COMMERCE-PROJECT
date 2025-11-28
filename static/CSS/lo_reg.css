@@ -1,0 +1,104 @@
+body {
+    min-height: 97vh;
+    display: flex;
+    flex-direction: column;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.head,
+.foot {
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.head {
+    background-color: rgb(158, 230, 230);
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #dfe9ff, #e8f0ff);
+    padding: 16px;
+}
+
+.nav-tabs {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    background-color: rgb(181, 234, 234);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.nav-tabs .nav-link:hover {
+    background-color: rgb(115, 222, 165) !important;
+    color: white !important;
+}
+
+.auth-wrapper {
+    width: 320px;
+    min-height: 335px;
+    /* safer than fixed height */
+    background: linear-gradient(135deg, #e2d9d9 0%, #e1eef6 60%);
+    border-radius: 10px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.20);
+    border: 1px solid black;
+    position: relative;
+    box-sizing: border-box;
+}
+
+/* Shared card container */
+.auth-card {
+    width: 100%;
+    padding: 15px;
+    font-weight: 600;
+    box-sizing: border-box;
+}
+
+/* Shared heading style */
+.auth-card h2 {
+    text-align: center;
+    margin-bottom: 18px;
+    font-weight: 600;
+}
+
+.btn-center {
+    display: block;
+    margin: 0 auto;
+}
+
+
+/* ✅ Flash container stays below fixed header */
+.flash-wrapper {
+    position: fixed;
+    top: 80px;       /* adjust if header height changes */
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    z-index: 2000;
+}
+
+/* ✅ Flash message styling */
+.flash-msg {
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: white;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* ✅ Success = green */
+.flash-msg.success {
+    background-color: #0bb532 !important;
+}
+
+/* ✅ Danger = red */
+.flash-msg.danger {
+    background-color: #d61f31 !important;
+}
+
+
+

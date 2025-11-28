@@ -1,0 +1,139 @@
+{% extends "user/base.html" %}
+
+{% block title %}Your Cart{% endblock %}
+
+{% block extra_head %}
+
+<style>
+    .card {
+        border-radius: 12px;
+    }
+
+    .table img {
+        border-radius: 6px;
+    }
+
+    .btn-sm {
+        width: 28;
+    }
+
+    .btn-rm {
+        width: 105px;
+    }
+
+    /* -----------------------------------------
+   Mobile-only cart panel styles
+   (no HTML changes; apply only <= 767.98px)
+   ----------------------------------------- */
+    @media (max-width: 767.98px) {
+
+        /* Remove button: full width and prominent */
+        .btn-rm {
+            display: inline-block;
+            width: 100% !important;
+            padding: 8px 10px;
+            box-sizing: border-box;
+            margin-top: 6px;
+        }
+
+        /* GRAND TOTAL + ACTIONS: stack vertically & full width buttons */
+        .d-flex.justify-content-between.align-items-center.mt-3 {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 10px;
+        }
+
+        .d-flex.justify-content-between.align-items-center.mt-3>div {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+
+
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container my-4">
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <h2 class="card-title mb-4">Your Cart</h2>
+            <hr>
+            {% if not cart %}
+            <p class="text-muted text-center">Your cart is empty.</p>
+            <div class="d-flex justify-content-end">
+                <a href="/user/products" class="btn btn-primary">Shop Now <i
+                        class="fa-solid fa-cart-arrow-down"></i></a>
+            </div>
+            {% else %}
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for pid, item in cart.items() %}
+                        <tr>
+                            <td>
+                                <img src="/static/uploads/product_images/{{ item.image }}" width="70" class="rounded">
+                            </td>
+
+                            <td>{{ item.name }}</td>
+                            <td>₹{{ item.price }}</td>
+
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="/user/cart/decrease/{{ pid }}"
+                                        class="btn btn-outline-secondary btn-sm">-</a>
+                                    <span>{{ item.quantity }}</span>
+                                    <a href="/user/cart/increase/{{ pid }}"
+                                        class="btn btn-outline-secondary btn-sm">+</a>
+                                </div>
+                            </td>
+
+                            <td><strong>₹{{ item.price * item.quantity }}</strong></td>
+
+                            <td>
+                                <a href="/user/cart/remove/{{ pid }}" class="btn btn-danger btn-rm">
+                                    Remove <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <h4>Grand Total: <strong>₹{{ grand_total }}</strong></h4>
+
+                <div>
+                    <a href="/user/products" class="btn btn-outline-primary">Continue Shopping <i
+                            class="fa-solid fa-cart-arrow-down"></i></a>
+                    <a href="/user/pay" class="btn btn-outline-success ms-2">Proceed to Pay <i
+                            class="fa-solid fa-credit-card"></i></a>
+                </div>
+            </div>
+
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

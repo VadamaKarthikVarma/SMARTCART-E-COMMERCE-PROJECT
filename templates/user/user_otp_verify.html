@@ -1,0 +1,30 @@
+{% extends "user/auth_base.html" %}
+
+{% block title %}OTP Verifying{% endblock %}
+
+{% block content %}
+
+<div class="auth-wrapper">
+    <div class="signup-card auth-card">
+
+        <h2>Verify OTP</h2>
+
+        <form method="POST" action="/otp-verification">
+
+            <label for="otp">Enter OTP:</label><br>
+            <input type="text" name="otp" id="otp" class="form-control" placeholder="enter OTP" required><br>
+
+
+            <label for="password">Create Password:</label><br>
+            <input type="password" name="password" id="password" class="form-control" placeholder="create password"
+                required required minlength="6"><br>
+
+
+            <button type="submit" class="btn btn-success btn-center">Verify & Register</button>
+        </form>
+
+    </div>
+</div>
+
+
+{% endblock %}

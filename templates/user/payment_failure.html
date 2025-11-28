@@ -1,0 +1,155 @@
+{% extends "user/base.html" %}
+
+{% block title %}Payment Failed{% endblock %}
+
+{% block extra_head %}
+
+<style>
+    .fail-box {
+        max-width: 430px;
+        margin: 126px auto;
+        background: linear-gradient(155deg, rgb(216, 216, 216) 0%, rgb(255, 247, 247) 60%);
+        padding: 35px;
+        border-radius: 14px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+        animation: pop 0.3s ease-out;
+    }
+
+    .fail-box:hover {
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+        transform: translateZ(100px);
+    }
+
+    @keyframes pop {
+        0% {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .fail-title {
+        font-size: 1.9rem;
+        color: #d9534f;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .fail-title i {
+        color: #dc3545;
+        margin-right: 8px;
+    }
+
+    .info {
+        font-size: 1rem;
+        color: #555;
+        margin: 4px 0;
+    }
+
+    .retry-btn,
+    .shop-btn {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.25s;
+    }
+
+    .retry-btn {
+        background: #dc3545;
+        color: white;
+    }
+
+    .retry-btn:hover {
+        background: #b02a37;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .button-row a {
+        width: auto;
+        margin-top: 0;
+    }
+
+    .shop-btn {
+        background: #198754;
+        color: white;
+    }
+
+    .shop-btn:hover {
+        background: #0f6b42;
+    }
+
+    /* Mobile: stack action buttons vertically (no HTML changes) */
+    @media (max-width: 767.98px) {
+
+        /* tighten the fail box a bit for mobile */
+        .fail-box {
+            max-width: calc(100% - 24px) !important;       
+        }
+
+        /* Make the button row stack */
+        .button-row {
+            display: flex !important;
+            flex-direction: column !important;
+            /* stack vertically */
+            align-items: stretch !important;
+            /* make children full width */
+            gap: 12px !important;
+            margin-top: 16px !important;
+        }
+
+        /* Ensure anchor buttons become block-level full width */
+        .button-row a,
+        .retry-btn,
+        .shop-btn {
+            width: 100% !important;
+            display: inline-block !important;
+            box-sizing: border-box !important;
+            margin-top: 0 !important;
+            /* remove extra top margin */
+            padding: 12px !important;
+            text-align: center !important;
+        }
+
+        /* If icons sit left and push text, add a small gap */
+        .button-row a i {
+            margin-right: 8px;
+        }
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <!-- FAILURE BOX -->
+    <div class="fail-box">
+        <h2 class="fail-title"><i class="fa-solid fa-circle-xmark"></i> Payment Failed!</h2>
+
+        <p class="info">Something went wrong during the transaction.</p>
+        <p class="info"><strong>Please try again.</strong></p>
+        <div class="button-row">
+            <a href="/user/pay" class="retry-btn"><i class="fa-solid fa-rotate-right"></i> Retry Payment</a>
+
+            <a href="/user/products" class="shop-btn"><i class="fa-solid fa-cart-shopping"></i> Continue Shopping</a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

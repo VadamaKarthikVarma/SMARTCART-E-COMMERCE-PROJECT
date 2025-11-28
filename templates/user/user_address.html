@@ -1,0 +1,74 @@
+{% extends "user/base.html" %}
+
+{% block title %}Delivery Address{% endblock %}
+
+{% block extra_head %}
+<style>
+    .card-body {
+background: linear-gradient(172deg,  #E3F2FD, #FFFFFF);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+
+                    <h3 class="mb-3">Delivery Address</h3>
+
+                    <form method="POST" action="/user/address?next={{ next_page }}">
+
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="text" name="phone" class="form-control" required value="{{ address.phone or '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Flat No.:</label>
+                            <input type="text" name="address_line1" class="form-control" required
+                                value="{{ address.address_line1 or '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Area, Street</label>
+                            <input type="text" name="address_line2" class="form-control" required
+                                value="{{ address.address_line2 or '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">City *</label>
+                            <input type="text" name="city" class="form-control" required
+                                value="{{ address.city or '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">State *</label>
+                            <input type="text" name="state" class="form-control" required
+                                value="{{ address.state or '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Pincode *</label>
+                            <input type="text" name="pincode" class="form-control" required
+                                value="{{ address.pincode or '' }}">
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            Save Address
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

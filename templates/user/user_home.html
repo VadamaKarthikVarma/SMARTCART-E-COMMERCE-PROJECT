@@ -1,0 +1,12 @@
+{% extends "user/base.html" %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="mb-3">
+    <i class="bi bi-person-circle"></i> Welcome, {{ user_name }}!
+</h2>
+
+<p class="text-muted">You are logged in as a user.</p>
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Admin Profile{% endblock %}
+
+{% block content %}
+
+<div class="profile-card PCM">
+    <h2>Admin Profile</h2>
+
+    <div class="profile-layout">
+
+        <div class="profile-left text-center AP">
+            {% if admin.profile_image %}
+            <img src="/static/uploads/admin_profiles/{{ admin.profile_image }}" alt="Profile Image"
+                class="profile-avatar">
+            {% else %}
+            <img src="{{ url_for('static', filename='uploads/assests/default_profile.jpg') }}" alt="Default Profile"
+                class="profile-avatar">
+            {% endif %}
+        </div>
+
+        <div class="profile-right">
+            <label>Name:</label>
+            <input type="text" class="form-control" value="{{ admin.name }}" disabled>
+
+            <label class="mt-2">Email:</label>
+            <input type="email" class="form-control" value="{{ admin.email }}" disabled>
+        </div>
+    </div>
+
+    <div class="d-grid mt-1">
+        <a href="/admin/profile/edit" class="btn btn-dark">Edit Profile <i class="fa-solid fa-pen fa-xs"></i></a>
+    </div>
+</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends "user/base.html" %}
+
+{% block title %}Update My Profile{% endblock %}
+
+{% block content %}
+
+<div class="profile-card profile-edit-card PCE">
+    <h2>Update My Profile</h2>
+
+    <form method="POST" action="/user/profile" enctype="multipart/form-data">
+
+        <div class="profile-layout">
+
+            <!-- LEFT: IMAGE + DROPDOWN -->
+            <div class="profile-left text-center">
+                {% if user.profile_image %}
+                <img src="/static/uploads/user_profiles/{{ user.profile_image }}" alt="Profile Image"
+                    class="profile-avatar">
+                {% else %}
+                <img src="{{ url_for('static', filename='uploads/assests/default_profile.jpg') }}" alt="Default Profile"
+                    class="profile-avatar">
+                {% endif %}
+
+                <!-- Hidden field that will actually be submitted -->
+                <input type="hidden" class="mt-3" name="photo_action" id="photoActionInput" value="keep">
+
+                <!-- Dropend menu for photo actions -->
+                <div class="btn-group dropend mt-3">
+                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Profile Photo
+                    </button>
+
+                    <ul class="dropdown-menu">
+                        <!-- KEEP -->
+                        <li>
+                            <button class="dropdown-item" type="button" id="keepPhotoBtn">
+                                Keep current photo
+                            </button>
+                        </li>
+
+                        <!-- UPDATE -->
+                        <li>
+                            <button class="dropdown-item" type="button" id="updatePhotoBtn">
+                                Update photo
+                            </button>
+                        </li>
+
+                        <!-- DELETE (only if there is a photo) -->
+                        {% if user.profile_image %}
+                        <li>
+                            <button class="dropdown-item text-danger" type="button" id="deletePhotoBtn">
+                                Remove photo
+                            </button>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- File input only visible when "Update photo" is chosen -->
+                <div id="photoUploadGroup" class="mt-2" style="display:none;">
+                    <input type="file" name="profile_image" id="profileImageInput" class="form-control"
+                        accept="image/*">
+                </div>
+            </div>
+
+            <!-- RIGHT: EDITABLE FIELDS -->
+            <div class="profile-right">
+                <label>Name:</label>
+                <input type="text" name="name" class="form-control" value="{{ user.name }}" required>
+
+                <label class="mt-2">Email:</label>
+                <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+
+                <!-- RESET PASSWORD BUTTON + HIDDEN FIELDS -->
+                <button type="button" id="resetPasswordBtn"  class="btn btn-warning w-100 mt-3">
+                    Reset Password
+                </button>
+
+                <div id="passwordFields" style="display:none;" class="mt-3">
+                    <label>Old Password:</label>
+                    <input type="password" name="old_password" class="form-control">
+
+                    <label class="mt-2">New Password:</label>
+                    <input type="password" name="new_password" class="form-control">
+
+                    <label class="mt-2">Confirm New Password:</label>
+                    <input type="password" name="confirm_password" class="form-control">
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid mt-3">
+            <button type="submit" class="btn btn-outline-success"><i class="fa-regular fa-circle-check"></i> Save Changes</button>
+            <a href="/user/profile" class="btn btn-dark mt-2"><i class="fa-solid fa-arrow-left"></i> Back</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // =========================
+        // PROFILE PHOTO LOGIC
+        // =========================
+        const photoActionInput = document.getElementById('photoActionInput');
+        const uploadGroup = document.getElementById('photoUploadGroup');
+        const fileInput = document.getElementById('profileImageInput');
+
+        const keepBtn = document.getElementById('keepPhotoBtn');
+        const updateBtn = document.getElementById('updatePhotoBtn');
+        const deleteBtn = document.getElementById('deletePhotoBtn');  // may be null if no image
+
+        function hideUpload() {
+            if (uploadGroup) uploadGroup.style.display = 'none';
+            if (fileInput) fileInput.value = "";
+        }
+
+        if (keepBtn) {
+            keepBtn.addEventListener('click', function () {
+                photoActionInput.value = 'keep';
+                hideUpload();
+            });
+        }
+
+        if (updateBtn) {
+            updateBtn.addEventListener('click', function () {
+                photoActionInput.value = 'update';
+                if (uploadGroup) uploadGroup.style.display = 'block';
+                if (fileInput) fileInput.click();
+            });
+        }
+
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function () {
+                photoActionInput.value = 'delete';
+                hideUpload();
+            });
+        }
+
+        // =========================
+        // RESET PASSWORD LOGIC (FRONTEND TOGGLE)
+        // =========================
+        const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+        const passwordFields = document.getElementById('passwordFields');
+
+        if (resetPasswordBtn && passwordFields) {
+            resetPasswordBtn.addEventListener('click', function () {
+                if (passwordFields.style.display === 'none' || passwordFields.style.display === '') {
+                    passwordFields.style.display = 'block';
+                } else {
+                    passwordFields.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

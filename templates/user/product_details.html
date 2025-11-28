@@ -1,0 +1,21 @@
+{% extends "user/base.html" %}
+
+{% block title %}Product Details{% endblock %}
+
+{% block content %}
+
+<div class="view-card card shadow-lg">
+
+    <h2 class="mb-4 text-center">{{ product.name }}</h2>
+    <img src="/static/uploads/product_images/{{ product.image }}" width="200" class="mb-3 product-img"><br><br>
+
+    <p><strong>Description:</strong> {{ product.description }}</p>
+    <p><strong>Category:</strong> {{ product.category }}</p>
+    <p><strong>Price:</strong> ₹{{ product.price }}</p>
+
+    <a href="/user/add-to-cart/{{ product.product_id }}" class="btn btn-secondary w-100 mt-2">Add to Cart <i class="fa-solid fa-cart-plus fa-lg"></i></a>
+    <a href="/user/products" class="btn btn-dark w-100 mt-2"><i class="fa-solid fa-arrow-left"></i> Back to Products</a>
+
+</div>
+
+{% endblock %}

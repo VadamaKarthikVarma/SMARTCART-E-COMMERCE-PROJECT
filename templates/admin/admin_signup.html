@@ -1,0 +1,26 @@
+{% extends "admin/auth_base.html" %}
+
+{% block title %}Admin Sign-Up Page{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="signup-card auth-card">
+
+        <h2>Admin Registration</h2>
+
+        <form method="POST" action="/admin-signup">
+
+            <label for="name">Name:</label>
+            <input id="name" type="text" name="name" class="form-control" required>
+            <br>
+            <label for="email">Email:</label>
+            <input id="email" type="email" name="email" class="form-control" required>
+
+            <p class="text-center">Already have an account? <a href="/admin-login">Login</a></p>
+
+            <button type="submit" class="btn btn-primary btn-center">Send OTP</button>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

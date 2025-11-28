@@ -1,0 +1,254 @@
+{% extends "user/base.html" %}
+
+{% block title %} Products {% endblock %}
+
+{% block extra_head %}
+
+<style>
+    .product-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 10px;
+    }
+
+    .product-card {
+        margin: 9px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 15px;
+        background: #fff;
+        text-align: center;
+        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+        transition: 0.3s;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .product-card:hover {
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+        transform: scale(1.05);
+    }
+
+    .product-card img {
+        width: 140px;
+        height: 100px;
+        object-fit: contain;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .product-card h3 {
+        margin: 5px 0;
+        font-size: 18px;
+    }
+
+    .product-card p {
+        margin: 2px 0;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .product-card a {
+        display: inline-block;
+        margin-top: 8px;
+        background-color: #007bff;
+        padding: 8px 12px;
+        border-radius: 5px;
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .product-card a:hover {
+        background-color: #0056b3;
+    }
+
+    /* -------------------------------------------------------
+   MOBILE: 3-column products + centered search under category
+   Consolidated (no repetition)
+   Applies at <= 767.98px
+   ------------------------------------------------------- */
+    @media (max-width: 767.98px) {
+
+        /* PRODUCT GRID: 3 columns on mobile */
+        .product-container {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 8px !important;
+            /* final unified gap */
+            padding: 8px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+
+        /* PRODUCT CARD compact sizing */
+        .product-card {
+            margin: 0 !important;
+            padding: 8px !important;
+            border-radius: 8px !important;
+            min-height: 120px !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .product-card img {
+            width: 68px !important;
+            height: 60px !important;
+            margin-bottom: 6px !important;
+            object-fit: contain !important;
+        }
+
+        .product-card h3 {
+            font-size: 12px !important;
+            margin: 4px 0 !important;
+        }
+
+        .product-card p {
+            font-size: 11px !important;
+            margin: 2px 0 !important;
+        }
+
+        .product-card a {
+            margin-top: auto !important;
+            padding: 6px 8px !important;
+            font-size: 11px !important;
+        }
+
+        /* Slight container padding on mobile */
+        .container .product-container {
+            padding-left: 6px;
+            padding-right: 6px;
+        }
+
+        /* -----------------------------
+     SEARCH BAR: stack under category & center
+     (targets your inline-styled top-row)
+     ----------------------------- */
+        div[style*="justify-content:space-between"] {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 10px !important;
+            margin: 15px 0 !important;
+        }
+
+        /* Category form remains natural width */
+        div[style*="justify-content:space-between"]>form:first-child {
+            width: 100% !important;
+            /* allow alignment inside full row */
+            display: flex !important;
+            justify-content: flex-end !important;
+            /* RIGHT END ALIGN */
+        }
+
+        /* Search form becomes centered row below category */
+        div[style*="justify-content:space-between"]>form:last-child {
+            width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            margin: 0 !important;
+        }
+
+        /* Search input sizing */
+        div[style*="justify-content:space-between"]>form:last-child .form-control {
+            width: 80% !important;
+            max-width: 420px;
+            min-width: 160px;
+            margin-right: 6px !important;
+        }
+
+        /* Keep search button beside input */
+        div[style*="justify-content:space-between"]>form:last-child .btn {
+            flex: 0 0 auto !important;
+        }
+    }
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<h2>All Products</h2>
+
+<!-- Top bar: Category (left) + Search (right) -->
+<div style="display:flex; justify-content:space-between; align-items:center; margin:15px 0;">
+
+    <!-- Category Filter (left) -->
+    <form method="GET" action="/user/products" style="margin:0;">
+
+        <div class="btn-group">
+            <!-- Single dropdown button -->
+            <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                {% if request.args.get('category') %}
+                {{ request.args.get('category') }}
+                {% else %}
+                All Categories
+                {% endif %}
+            </button>
+
+            <ul class="dropdown-menu">
+                <li>
+                    <button class="dropdown-item" name="category" value="" type="submit">
+                        All Categories
+                    </button>
+                </li>
+
+                {% for cat in categories %}
+                <li>
+                    <button class="dropdown-item" name="category" value="{{ cat.category }}" type="submit">
+                        {{ cat.category }}
+                    </button>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+    </form>
+
+
+    <!-- Search Form (right) -->
+    <form method="GET" action="/user/products" style="display:inline-block; margin:0;">
+
+        <div style="display:flex; gap:6px; align-items:center;">
+            <input type="text" name="search" class="form-control" placeholder="Search product..." style="width:200px;"
+                value="{{ request.args.get('search', '') }}">
+
+            <button class="btn btn-secondary btn-sm" type="submit">
+                Search
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+<hr>
+
+<!-- Product Cards -->
+<div class="product-container">
+
+    {% for product in products %}
+    <div class="product-card">
+
+        <img src="/static/uploads/product_images/{{ product.image }}">
+
+        <h3>{{ product.name }}</h3>
+        <p>{{ product.category }}</p>
+        <p><strong>₹{{ product.price }}</strong></p>
+
+        <a href="/user/product/{{ product.product_id }}">View Details</a>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

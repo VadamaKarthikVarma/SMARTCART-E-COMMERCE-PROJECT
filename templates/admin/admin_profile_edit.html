@@ -1,0 +1,115 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Update Admin Profile{% endblock %}
+
+{% block content %}
+
+<div class="profile-card profile-edit-card PCE">
+    <h2>Update Admin Profile</h2>
+
+    <form method="POST" action="/admin/profile" enctype="multipart/form-data">
+
+        <div class="profile-layout">
+
+            <div class="profile-left text-center">
+                {% if admin.profile_image %}
+                <img src="/static/uploads/admin_profiles/{{ admin.profile_image }}" alt="Profile Image" class="profile-avatar">
+                {% else %}
+                <img src="{{ url_for('static', filename='uploads/assests/default_profile.jpg') }}" alt="Default Profile" class="profile-avatar">
+                {% endif %}
+
+                <input type="hidden" name="photo_action" id="photoActionInput" value="keep">
+
+                <div class="btn-group dropend mt-3">
+                    <button type="button" class="btn btn-outline-secondary dropdown-toggle"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        Profile Photo
+                    </button>
+
+                    <ul class="dropdown-menu">
+                        <li><button class="dropdown-item" type="button" id="keepPhotoBtn">Keep current photo</button></li>
+                        <li><button class="dropdown-item" type="button" id="updatePhotoBtn">Update photo</button></li>
+
+                        {% if admin.profile_image %}
+                        <li>
+                            <button class="dropdown-item text-danger" type="button" id="deletePhotoBtn">
+                                Remove photo
+                            </button>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div id="photoUploadGroup" class="mt-2" style="display:none;">
+                    <input type="file" name="profile_image" id="profileImageInput"
+                           class="form-control" accept="image/*">
+                </div>
+            </div>
+
+            <div class="profile-right">
+                <label>Name:</label>
+                <input type="text" name="name" class="form-control" value="{{ admin.name }}" required>
+
+                <label class="mt-2">Email:</label>
+                <input type="email" name="email" class="form-control" value="{{ admin.email }}" required>
+
+                <label class="mt-2">New Password (optional):</label>
+                <input type="password" name="password" class="form-control">
+            </div>
+        </div>
+
+        <div class="d-grid mt-3">
+            <button type="submit" class="btn btn-outline-success"><i class="fa-regular fa-circle-check"></i> Save Changes</button>
+            <a href="/admin/profile" class="btn btn-dark mt-2"><i class="fa-solid fa-arrow-left"></i> Back</a>
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}
+
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const photoActionInput = document.getElementById('photoActionInput');
+        const uploadGroup = document.getElementById('photoUploadGroup');
+        const fileInput = document.getElementById('profileImageInput');
+
+        const keepBtn = document.getElementById('keepPhotoBtn');
+        const updateBtn = document.getElementById('updatePhotoBtn');
+        const deleteBtn = document.getElementById('deletePhotoBtn');  // may be null if no image
+
+        // Helper: hide file input and clear value
+        function hideUpload() {
+            if (uploadGroup) uploadGroup.style.display = 'none';
+            if (fileInput) fileInput.value = "";
+        }
+
+        // KEEP CURRENT PHOTO
+        if (keepBtn) {
+            keepBtn.addEventListener('click', function () {
+                photoActionInput.value = 'keep';
+                hideUpload();
+            });
+        }
+
+        // UPDATE PHOTO
+        if (updateBtn) {
+            updateBtn.addEventListener('click', function () {
+                photoActionInput.value = 'update';
+                if (uploadGroup) uploadGroup.style.display = 'block';
+                if (fileInput) fileInput.click(); // optional: auto-open file chooser
+            });
+        }
+
+        // DELETE PHOTO
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function () {
+                photoActionInput.value = 'delete';
+                hideUpload();
+            });
+        }
+    });
+</script>
+{% endblock %}

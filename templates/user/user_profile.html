@@ -1,0 +1,36 @@
+{% extends "user/base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+
+<div class="profile-card PCM">
+    <h2>My Profile</h2>
+
+    <div class="profile-layout">
+        <!-- LEFT: IMAGE -->
+        <div class="profile-left text-center AP">
+            {% if user.profile_image %}
+            <img src="/static/uploads/user_profiles/{{ user.profile_image }}" alt="Profile Image" class="profile-avatar">
+            {% else %}
+            <!-- Default profile image -->
+            <img src="{{ url_for('static', filename='uploads/assests/default_profile.jpg') }}" alt="Default Profile" class="profile-avatar">
+            {% endif %}
+        </div>
+
+        <!-- RIGHT: FIELDS (read-only) -->
+        <div class="profile-right">
+            <label>Name:</label>
+            <input type="text" class="form-control" value="{{ user.name }}" disabled>
+
+            <label class="mt-2">Email:</label>
+            <input type="email" class="form-control" value="{{ user.email }}" disabled>
+        </div>
+    </div>
+
+    <div class="d-grid mt-1">
+        <a href="/user/profile/edit" class="btn btn-dark">Edit Profile <i class="fa-solid fa-pen fa-xs"></i></a>
+    </div>
+</div>
+
+{% endblock %}

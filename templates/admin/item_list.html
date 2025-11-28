@@ -1,0 +1,158 @@
+{% extends "admin/base.html" %}
+
+{% block title %}All Products{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* TOP BAR: keep desktop, stack on mobile */
+    @media (max-width: 767.98px) {
+
+        /* target the inline-styled top row safely */
+        div[style*="justify-content:space-between"] {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 10px !important;
+            margin: 12px 0 !important;
+        }
+
+        /* Category group (first form) — align right end if you want */
+        div[style*="justify-content:space-between"]>form:first-child {
+            display: flex !important;
+            justify-content: flex-end !important;
+            /* keeps category at right end */
+            width: 100% !important;
+            padding-right: 8px;
+        }
+
+        /* Search form: centered below */
+        div[style*="justify-content:space-between"]>form:last-child {
+            display: flex !important;
+            justify-content: center !important;
+            width: 100% !important;
+            margin: 0;
+        }
+
+        div[style*="justify-content:space-between"]>form:last-child .form-control {
+            width: 82% !important;
+            max-width: 420px;
+            min-width: 140px;
+            margin-right: 6px !important;
+        }
+    }
+    
+
+</style>
+{% endblock %}
+{% block content %}
+
+<!-- Top bar: Category (left) + Search (right) -->
+<div style="display:flex; justify-content:space-between; align-items:center; margin:15px 0;">
+
+    <!-- Category Filter (left) -->
+    <form method="GET" action="/admin/item-list" style="margin:0;">
+
+        <div class="btn-group">
+            <!-- Main Button (Label Only) -->
+            <button type="button" class="btn btn-secondary text-black bg-primary-subtle">
+                {% if request.args.get('category') %}
+                {{ request.args.get('category') }}
+                {% else %}
+                All Categories
+                {% endif %}
+            </button>
+
+            <!-- Split Toggle -->
+            <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+
+            <!-- Dropdown Items -->
+            <ul class="dropdown-menu">
+
+                <li>
+                    <button class="dropdown-item" name="category" value="" type="submit">All Categories</button>
+                </li>
+
+                {% for cat in categories %}
+                <li>
+                    <button class="dropdown-item" name="category" value="{{ cat.category }}" type="submit">
+                        {{ cat.category }}
+                    </button>
+                </li>
+                {% endfor %}
+
+            </ul>
+        </div>
+
+    </form>
+
+
+    <!-- Search Form (right) -->
+    <form method="GET" action="/admin/item-list" style="display:inline-block; margin:0;">
+        <div style="display:flex; gap:6px; align-items:center;">
+            <input type="text" name="search" class="form-control" placeholder="Search product..." style="width:200px;"
+                value="{{ request.args.get('search', '') }}">
+
+            <button class="btn btn-secondary btn-sm" type="submit">
+                Search
+            </button>
+        </div>
+    </form>
+
+
+</div>
+
+
+<h2>Product List</h2>
+
+<a href="/admin/add-item" class="btn btn-success mb-3">Add New Product</a>
+
+<table class="table table-bordered table-striped align-middle" style="border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>View</th>
+            <th>Update</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.product_id }}</td>
+
+            <td>
+                <img src="/static/uploads/product_images/{{ product.image }}" width="70" height="70">
+            </td>
+
+            <td>{{ product.name }}</td>
+            <td>{{ product.category }}</td>
+            <td>₹{{ product.price }}</td>
+
+            <td class="text-center">
+                <a href="/admin/view-item/{{ product.product_id }}" class="btn btn-sm btn-info">View <i
+                        class="fa-solid fa-eye"></i></a>
+            </td>
+
+            <td class="text-center">
+                <a href="/admin/update-item/{{ product.product_id }}" class="btn btn-sm btn-warning">Update <i
+                        class="fa-solid fa-pen fa-xs"></i></a>
+            </td>
+
+            <td class="text-center">
+                <a href="/admin/delete-item/{{ product.product_id }}"
+                    onclick="return confirm('Are you sure you want to delete this product?')"
+                    class="btn btn-sm btn-danger"> <i class="fa-solid fa-trash"></i> </a>
+            </td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

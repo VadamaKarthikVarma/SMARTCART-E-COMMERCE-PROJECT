@@ -1,0 +1,45 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Update Product{% endblock %}
+
+{% block content %}
+
+
+<div class="update-card shadow-lg">
+    <h2 class="mb-4 text-center">Update Product</h2>
+    <form method="POST" action="/admin/update-item/{{ product.product_id }}" enctype="multipart/form-data">
+
+        <div class="update-grid">
+
+            <!-- LEFT COLUMN: FIELDS -->
+            <div>
+                <label>Product Name:</label>
+                <input type="text" class="form-control" name="name" value="{{ product.name }}" required>
+
+                <label>Description:</label>
+                <textarea class="form-control" name="description" required>{{ product.description }}</textarea>
+
+                <label>Category:</label>
+                <input type="text" class="form-control" name="category" value="{{ product.category }}" required>
+
+                <label>Price:</label>
+                <input type="number" step="0.01" class="form-control" name="price" value="{{ product.price }}" required>
+            </div>
+
+            <!-- RIGHT COLUMN: IMAGE -->
+            <div>
+                <label>Old Image:</label>
+                <img src="/static/uploads/product_images/{{ product.image }}">
+
+                <label>Choose New Image (Optional):</label>
+                <input type="file" class="form-control" name="image" accept="image/*">
+            </div>
+
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 mt-3">Update Product</button>
+        <a href="/admin/item-list" class="btn btn-secondary w-100 mt-3"><i class="fa-solid fa-arrow-left"></i> Back to Product List</a>
+    </form>
+</div>
+
+{% endblock %}
