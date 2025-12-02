@@ -17,7 +17,7 @@
                 <img src="/static/uploads/user_profiles/{{ user.profile_image }}" alt="Profile Image"
                     class="profile-avatar">
                 {% else %}
-                <img src="{{ url_for('static', filename='uploads/assests/default_profile.jpg') }}" alt="Default Profile"
+                <img src="{{ url_for('static', filename='uploads/assests/default_profile.png') }}" alt="Default Profile"
                     class="profile-avatar">
                 {% endif %}
 
@@ -73,25 +73,32 @@
                 <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
 
                 <!-- RESET PASSWORD BUTTON + HIDDEN FIELDS -->
-                <button type="button" id="resetPasswordBtn"  class="btn btn-warning w-100 mt-3">
+                <button type="button" id="resetPasswordBtn" class="btn btn-warning w-100 mt-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
+                        <path
+                            d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
+                    </svg>
                     Reset Password
                 </button>
 
                 <div id="passwordFields" style="display:none;" class="mt-3">
                     <label>Old Password:</label>
-                    <input type="password" name="old_password" class="form-control">
+                    <input type="password" name="old_password" class="form-control" autocomplete="new-password">
 
                     <label class="mt-2">New Password:</label>
-                    <input type="password" name="new_password" class="form-control">
+                    <input type="password" name="new_password" class="form-control" autocomplete="new-password">
 
                     <label class="mt-2">Confirm New Password:</label>
-                    <input type="password" name="confirm_password" class="form-control">
+                    <input type="password" name="confirm_password" class="form-control" autocomplete="new-password">
                 </div>
             </div>
         </div>
 
         <div class="d-grid mt-3">
-            <button type="submit" class="btn btn-outline-success"><i class="fa-regular fa-circle-check"></i> Save Changes</button>
+            <button type="submit" class="btn btn-outline-success"><i class="fa-regular fa-circle-check"></i> Save
+                Changes</button>
             <a href="/user/profile" class="btn btn-dark mt-2"><i class="fa-solid fa-arrow-left"></i> Back</a>
         </div>
     </form>
@@ -113,11 +120,13 @@
         const updateBtn = document.getElementById('updatePhotoBtn');
         const deleteBtn = document.getElementById('deletePhotoBtn');  // may be null if no image
 
+        // Helper: hide file input and clear value
         function hideUpload() {
             if (uploadGroup) uploadGroup.style.display = 'none';
             if (fileInput) fileInput.value = "";
         }
 
+        // KEEP CURRENT PHOTO
         if (keepBtn) {
             keepBtn.addEventListener('click', function () {
                 photoActionInput.value = 'keep';
@@ -125,6 +134,7 @@
             });
         }
 
+        // UPDATE PHOTO
         if (updateBtn) {
             updateBtn.addEventListener('click', function () {
                 photoActionInput.value = 'update';
@@ -133,6 +143,7 @@
             });
         }
 
+        // DELETE PHOTO
         if (deleteBtn) {
             deleteBtn.addEventListener('click', function () {
                 photoActionInput.value = 'delete';

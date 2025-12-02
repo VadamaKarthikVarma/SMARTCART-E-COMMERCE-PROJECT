@@ -64,6 +64,7 @@
 
     .product-card a:hover {
         background-color: #0056b3;
+        color: white;
     }
 
     /* -------------------------------------------------------
@@ -243,9 +244,7 @@
         <h3>{{ product.name }}</h3>
         <p>{{ product.category }}</p>
         <p><strong>₹{{ product.price }}</strong></p>
-
-        <a href="/user/product/{{ product.product_id }}">View Details</a>
-
+        <a href="/user/product/{{ product.product_id }}" class="btn">View Details</a>
     </div>
     {% endfor %}
 

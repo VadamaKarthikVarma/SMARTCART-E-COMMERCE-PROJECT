@@ -281,16 +281,13 @@ def admin_logout():
     return redirect('/admin-login')
 
 
+# =================================================================
 # ------------------- IMAGE UPLOAD PATH -------------------
+# =================================================================
 UPLOAD_FOLDER = 'static/uploads/product_images'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# ------------------- ADMIN PROFILE IMAGE PATH -------------------
-ADMIN_UPLOAD_FOLDER = 'static/uploads/admin_profiles'
-app.config['ADMIN_UPLOAD_FOLDER'] = ADMIN_UPLOAD_FOLDER
-
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(ADMIN_UPLOAD_FOLDER, exist_ok=True)
 
 
 # =================================================================
@@ -531,6 +528,15 @@ def delete_item(item_id):
 
 
 # =================================================================
+# ------------------- ADMIN PROFILE IMAGE PATH -------------------
+# =================================================================
+ADMIN_UPLOAD_FOLDER = 'static/uploads/admin_profiles'
+app.config['ADMIN_UPLOAD_FOLDER'] = ADMIN_UPLOAD_FOLDER
+
+os.makedirs(ADMIN_UPLOAD_FOLDER, exist_ok=True)
+
+
+# =================================================================
 # ROUTE 14: ADMIN PROFILE (VIEW)
 # =================================================================
 @app.route('/admin/profile', methods=['GET'])
@@ -598,9 +604,21 @@ def admin_profile_update():
 
     admin_id = session['admin_id']
 
+    # Basic fields
     name = request.form.get('name', '').strip()
     email = request.form.get('email', '').strip()
-    new_password = request.form.get('password', '').strip()
+
+    # Password-related fields (supporting old/new/confirm style)
+    old_password_input = request.form.get('old_password', '').strip()
+    new_password = request.form.get('new_password', '').strip()
+    confirm_password = request.form.get('confirm_password', '').strip()
+
+    # Backwards-compatible single 'password' field (if present)
+    single_password = request.form.get('password', '').strip()
+    if single_password and not (old_password_input or new_password or confirm_password):
+        new_password = single_password
+        confirm_password = single_password
+        # Note: we still require old_password to be provided for safety
 
     photo_action = request.form.get('photo_action', 'keep')
     new_image = request.files.get('profile_image')
@@ -618,16 +636,57 @@ def admin_profile_update():
         return redirect('/admin-login')
 
     old_image_name = admin.get('profile_image')
-    old_password = admin['password']
+    old_password_db = admin['password']  # hashed password stored in DB
 
-    if new_password:
+    # Default: keep existing password
+    hashed_password = old_password_db
+
+    # =========================================================
+    # PASSWORD RESET / CHANGE LOGIC
+    # =========================================================
+    # If any of the password fields are filled, treat as a change attempt
+    if old_password_input or new_password or confirm_password:
+        # All fields must be provided
+        if not old_password_input or not new_password or not confirm_password:
+            flash("Please fill all password fields to reset your password.", "danger")
+            cursor.close()
+            conn.close()
+            return redirect('/admin/profile/edit')
+
+        # Verify old password
+        try:
+            is_correct = bcrypt.checkpw(
+                old_password_input.encode('utf-8'),
+                old_password_db.encode('utf-8')
+            )
+        except Exception:
+            flash("Something went wrong while checking your old password.", "danger")
+            cursor.close()
+            conn.close()
+            return redirect('/admin/profile/edit')
+
+        if not is_correct:
+            flash("Old password is incorrect!", "danger")
+            cursor.close()
+            conn.close()
+            return redirect('/admin/profile/edit')
+
+        # New and confirm must match
+        if new_password != confirm_password:
+            flash("New password and Confirm New Password do not match!", "danger")
+            cursor.close()
+            conn.close()
+            return redirect('/admin/profile/edit')
+
+        # Hash new password
         hashed_password = bcrypt.hashpw(
             new_password.encode('utf-8'),
             bcrypt.gensalt()
         ).decode('utf-8')
-    else:
-        hashed_password = old_password
 
+    # =========================================================
+    # PROFILE PHOTO LOGIC
+    # =========================================================
     final_image_name = old_image_name
 
     if photo_action == 'update' and new_image and new_image.filename:
@@ -635,10 +694,14 @@ def admin_profile_update():
         image_path = os.path.join(app.config['ADMIN_UPLOAD_FOLDER'], new_filename)
         new_image.save(image_path)
 
+        # Delete old file if exists
         if old_image_name:
             old_path = os.path.join(app.config['ADMIN_UPLOAD_FOLDER'], old_image_name)
             if os.path.exists(old_path):
-                os.remove(old_path)
+                try:
+                    os.remove(old_path)
+                except Exception:
+                    pass
 
         final_image_name = new_filename
 
@@ -646,9 +709,15 @@ def admin_profile_update():
         if old_image_name:
             old_path = os.path.join(app.config['ADMIN_UPLOAD_FOLDER'], old_image_name)
             if os.path.exists(old_path):
-                os.remove(old_path)
+                try:
+                    os.remove(old_path)
+                except Exception:
+                    pass
         final_image_name = None
 
+    # =========================================================
+    # UPDATE ADMIN RECORD
+    # =========================================================
     cursor.execute("""
         UPDATE admin
         SET name=%s, email=%s, password=%s, profile_image=%s
@@ -659,11 +728,13 @@ def admin_profile_update():
     cursor.close()
     conn.close()
 
+    # Update session info
     session['admin_name'] = name
     session['admin_email'] = email
 
     flash("Profile updated successfully!", "success")
     return redirect('/admin/profile')
+
 
 
 # =================================================================
@@ -1359,6 +1430,7 @@ def user_pay():
         return redirect('/user-login')
 
     cart = session.get('cart', {})
+
     if not cart:
         flash("Your cart is empty!", "danger")
         return redirect('/user/products')
@@ -1664,6 +1736,45 @@ def download_invoice(order_id):
 
     return response
 
+
+
+# =================================================================
+# ROUTE: BUY NOW (single-item)
+# =================================================================
+@app.route('/user/buy-now/<int:product_id>')
+def buy_now(product_id):
+    # require login
+    if 'user_id' not in session:
+        flash("Please login to continue.", "danger")
+        return redirect('/user-login')
+
+    # fetch product
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM products WHERE product_id=%s", (product_id,))
+    product = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if not product:
+        flash("Product not found.", "danger")
+        return redirect('/user/products')
+
+    # build a single-item cart using the exact structure your /user/pay expects
+    pid = str(product_id)
+    session['cart'] = {
+        pid: {
+            'name': product['name'],
+            # ensure price stored as float so arithmetic in /user/pay works
+            'price': float(product['price']),
+            'image': product.get('image') or "",
+            'quantity': 1
+        }
+    }
+    session.modified = True
+
+    # redirect to your pay route which will create a razorpay order and render payment page
+    return redirect('/user/pay')
 
 
 # =================================================================

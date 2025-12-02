@@ -40,11 +40,10 @@
             margin-right: 6px !important;
         }
     }
-    
-
 </style>
 {% endblock %}
 {% block content %}
+<h2>Product List</h2>
 
 <!-- Top bar: Category (left) + Search (right) -->
 <div style="display:flex; justify-content:space-between; align-items:center; margin:15px 0;">
@@ -104,55 +103,55 @@
 
 </div>
 
-
-<h2>Product List</h2>
-
 <a href="/admin/add-item" class="btn btn-success mb-3">Add New Product</a>
 
-<table class="table table-bordered table-striped align-middle" style="border-collapse: collapse;">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Image</th>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>View</th>
-            <th>Update</th>
-            <th>Delete</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for product in products %}
-        <tr>
-            <td>{{ product.product_id }}</td>
+<div class="table-responsive">
+    <table class="table table-bordered table-striped align-middle" style="border-collapse: collapse;">
+        <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>View</th>
+                <th>Update</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
 
-            <td>
-                <img src="/static/uploads/product_images/{{ product.image }}" width="70" height="70">
-            </td>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.product_id }}</td>
 
-            <td>{{ product.name }}</td>
-            <td>{{ product.category }}</td>
-            <td>₹{{ product.price }}</td>
+                <td>
+                    <img src="/static/uploads/product_images/{{ product.image }}" width="70" height="70">
+                </td>
 
-            <td class="text-center">
-                <a href="/admin/view-item/{{ product.product_id }}" class="btn btn-sm btn-info">View <i
-                        class="fa-solid fa-eye"></i></a>
-            </td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.category }}</td>
+                <td>₹{{ product.price }}</td>
 
-            <td class="text-center">
-                <a href="/admin/update-item/{{ product.product_id }}" class="btn btn-sm btn-warning">Update <i
-                        class="fa-solid fa-pen fa-xs"></i></a>
-            </td>
+                <td class="text-center">
+                    <a href="/admin/view-item/{{ product.product_id }}" class="btn btn-sm btn-info"> <i
+                            class="fa-solid fa-eye"></i></a>
+                </td>
 
-            <td class="text-center">
-                <a href="/admin/delete-item/{{ product.product_id }}"
-                    onclick="return confirm('Are you sure you want to delete this product?')"
-                    class="btn btn-sm btn-danger"> <i class="fa-solid fa-trash"></i> </a>
-            </td>
+                <td class="text-center">
+                    <a href="/admin/update-item/{{ product.product_id }}" class="btn btn-sm btn-warning"> <i
+                            class="fa-solid fa-pen fa-xs"></i></a>
+                </td>
 
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                <td class="text-center">
+                    <a href="/admin/delete-item/{{ product.product_id }}"
+                        onclick="return confirm('Are you sure you want to delete this product?')"
+                        class="btn btn-sm btn-danger"> <i class="fa-solid fa-trash"></i> </a>
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

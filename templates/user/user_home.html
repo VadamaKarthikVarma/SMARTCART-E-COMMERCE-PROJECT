@@ -2,11 +2,99 @@
 
 {% block title %}User Dashboard{% endblock %}
 
-{% block content %}
-<h2 class="mb-3">
-    <i class="bi bi-person-circle"></i> Welcome, {{ user_name }}!
-</h2>
+{% block extra_head %}
+<style>
+    /* container for banner */
+    .dply {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        /* Set the banner height you want (responsive units ok) */
+        height: 800px;
+        /* change as needed */
+        max-height: 60vh;
+        /* won't exceed 60% viewport height */
+        position: relative;
+        /* for absolute children (button overlay) */
+        overflow: hidden;
+        /* hide overflowing image parts */
+        border-radius: .5rem;
+        /* optional rounded corners */
+    }
 
-<p class="text-muted">You are logged in as a user.</p>
+    /* image fits the container */
+    .dply .banner-img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        /* <-- use 'contain' if you prefer seeing whole image */
+        object-position: center;
+        /* control which part is centered */
+    }
+
+    /* CTA button overlay */
+    .dply .hero-cta {
+        position: absolute;
+        left: 33%;
+        transform: translateX(-50%);
+        bottom: 82px;
+        /* distance from bottom */
+        z-index: 5;
+    }
+
+    /* make rounded using bootstrap utility class or use this for finer control */
+    .dply.rounded {
+        overflow: hidden;
+    }
+
+    /* small screens — reduce height so it doesn't take too much space */
+    @media (max-width: 575.98px) {
+        .dply {
+            height: 260px;
+            max-height: 40vh;
+        }
+
+        .dply .hero-cta {
+        position: absolute;
+        left: 77%;
+        transform: translateX(-50%);
+        bottom: 12px;
+        z-index: 5;
+        padding: 6px 14px;      /* smaller button */
+        font-size: 0.75rem;
+    }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+
+    <div class="hd mb-2">
+        <h3>
+            Welcome, {{ user_name }}!
+        </h3>
+    </div>
+
+    <div class="dply rounded-lg mt-3">
+        <picture>
+            <!-- Mobile device image -->
+            <source media="(max-width: 575.98px)"
+                srcset="{{ url_for('static', filename='uploads/assests/mini-banner.jpg') }}">
+
+            <!-- Desktop / laptop default image -->
+            <img src="{{ url_for('static', filename='uploads/assests/banner.jpg') }}" alt="Banner" class="banner-img">
+        </picture>
+        <!-- CTA BUTTON OVER IMAGE -->
+        <a href="{{ url_for('user_products') }}" class="btn btn-outline-dark btn-lg hero-cta shadow">
+            Shop Now
+        </a>
+    </div>
+
+
+</div>
 
 {% endblock %}

@@ -2,6 +2,31 @@
 
 {% block title %}Product Details{% endblock %}
 
+{% block extra_head %}
+<style>
+    /* Make the two buttons side-by-side and responsive */
+    .btnd {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        /* center the pair */
+        flex-wrap: wrap;
+        /* will wrap on small screens */
+        align-items: center;
+    }
+
+    /* Ensure each button uses half width on medium+ screens and full width when wrapping */
+    .btnd>a.btn {
+        flex: 1 1 48%;
+        /* grow, shrink, basis ~48% to allow gap */
+        max-width: 48%;
+        box-sizing: border-box;
+    }
+</style>
+
+
+{% endblock %}
+
 {% block content %}
 
 <div class="view-card card shadow-lg">
@@ -13,7 +38,11 @@
     <p><strong>Category:</strong> {{ product.category }}</p>
     <p><strong>Price:</strong> ₹{{ product.price }}</p>
 
-    <a href="/user/add-to-cart/{{ product.product_id }}" class="btn btn-secondary w-100 mt-2">Add to Cart <i class="fa-solid fa-cart-plus fa-lg"></i></a>
+    <div class="btnd">
+        <a href="{{ url_for('buy_now', product_id=product.product_id) }}" class="btn btn-success w-50 mt-2">Buy Now <i class="fa-solid fa-credit-card"></i></a>
+        <a href="/user/add-to-cart/{{ product.product_id }}" class="btn btn-secondary w-50 mt-2">Add to Cart <i
+                class="fa-solid fa-cart-plus fa-lg"></i></a>
+    </div>
     <a href="/user/products" class="btn btn-dark w-100 mt-2"><i class="fa-solid fa-arrow-left"></i> Back to Products</a>
 
 </div>
