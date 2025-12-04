@@ -26,6 +26,7 @@
 
 
     .order-card {
+        max-width: 100%;
         width: 378px;
         background: #ffffff;
         border-radius: 12px;
@@ -112,6 +113,62 @@
     @media (max-width: 600px) {
         .orders-grid {
             grid-template-columns: 1fr;
+        }
+    }
+
+    /* ---------- Mobile-only overrides for very small screens ---------- */
+    @media (max-width: 394px) {
+
+        /* Make the card flexible only on small phones */
+        .order-card {
+            width: 100% !important;
+            /* allow card to shrink to viewport */
+            max-width: 365px;
+            /* keep a sensible upper limit */
+            margin: 0 auto;
+            /* center it */
+            box-sizing: border-box;
+            /* include padding in width */
+        }
+
+        /* Ensure the grid becomes single column on small phones */
+        .orders-grid {
+            grid-template-columns: 1fr !important;
+            gap: 14px;
+            padding: 0 12px;
+        }
+
+        /* Buttons container: keep them in a single row and prevent wrap */
+        .bn {
+            display: flex;
+            gap: 8px;
+            justify-content: space-between;
+            flex-wrap: nowrap;
+            /* prevent stacking */
+            margin-top: 10px;
+        }
+
+        /* Buttons: share width, but don't overflow */
+        .view-btn {
+            flex: 1 1 0;
+            /* grow/shrink equally */
+            min-width: 0;
+            /* prevents overflowing text */
+            padding: 9px 8px;
+            /* slightly tighter padding */
+            font-size: 13px;
+            white-space: nowrap;
+            /* prevent internal wrapping */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /* gracefully truncate if needed */
+        }
+
+        /* If icons push content, hide icon on extremely small widths */
+        @media (max-width: 340px) {
+            .view-btn i {
+                display: none;
+            }
         }
     }
 </style>
